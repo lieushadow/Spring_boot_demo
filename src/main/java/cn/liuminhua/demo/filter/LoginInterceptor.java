@@ -26,7 +26,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
 		HandlerMethod method = (HandlerMethod) o;
-		System.out.println("handler " + method.getMethod().toString());
 		if (!(o instanceof HandlerMethod)) {
 			return true;
 		}
@@ -53,6 +52,10 @@ public class LoginInterceptor implements HandlerInterceptor {
 	@Override
 	public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
 		logRequest(httpServletRequest);
+		logResponse(httpServletRequest, httpServletResponse);
+		if (o instanceof HandlerMethod) {
+			HandlerMethod method = (HandlerMethod) o;
+		}
 	}
 
 
@@ -63,11 +66,32 @@ public class LoginInterceptor implements HandlerInterceptor {
 		String contentType = request.getContentType();
 		Enumeration<String> headerNames = request.getHeaderNames();
 		Map<String, String[]> parameterMap = request.getParameterMap();
-		Enumeration<String> attributeNames = request.getAttributeNames();
 		logger.debug("{} {}", method, requestURL);
 		logger.debug("request ContentType:{}", contentType);
 		logger.debug("request headerNames:{}", printHeader(request));
 		logger.debug("request body:{}", JSONObject.toJSONString(parameterMap));
+	}
+
+	private void logResponse(HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("-------------------------           响应部分             ----------------------------");
+		StringBuffer requestURL = request.getRequestURL();
+		String method = request.getMethod();
+		logger.debug("{} {}", method, requestURL);
+		logger.debug("reponse ContentType:{}", response.getContentType());
+
+		logger.debug("request body:{}", response.getClass().getName());
+		try {
+
+			logger.debug("request body:{}", response.getOutputStream().getClass().getName());
+		} catch (Exception ex) {
+
+		}
+//		if (response instanceof HttpServletResponseWrapper) {
+//			HttpServletResponseWrapper responseWrapper = (HttpServletResponseWrapper) response;
+//			logger.debug("request body:{}", responseWrapper.getOutputStream().get);
+//		}
+
+
 	}
 
 
